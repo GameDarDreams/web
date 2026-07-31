@@ -2,9 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hello World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jen buď EPIC - Deskovka</title>
+  <style>
+    body {
+      margin: 0;
+      background: url("background.jpg") repeat;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #3b2f1e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+    .title-image {
+      max-width: 600px;
+      width: 100%;
+      height: auto;
+    }
+    main {
+      max-width: 700px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      padding: 30px 40px;
+      margin-top: 20px;
+    }
+    a.manual-link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #3b2f1e;
+      color: #f5ecd7;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    a.manual-link:hover {
+      background: #5a4a30;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, World!</h1>
+  <img class="title-image" src="EPIC_title.png" alt="EPIC board game title">
+  <main>
+    <p>Vítej na stránce deskovky Jen buď EPIC. Stáhni si pravidla a začni hrát.</p>
+    <a class="manual-link" href="EPIC_rules_CZ.pdf" target="_blank" rel="noopener">Stáhnout pravidla (PDF)</a>
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/qQD_u0dTspk" title="Jen buď EPIC - promo video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </main>
 </body>
 </html>
