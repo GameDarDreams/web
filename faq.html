@@ -24,6 +24,8 @@
     }
     main {
       max-width: 700px;
+      width: 100%;
+      box-sizing: border-box;
       text-align: left;
       background: rgba(255, 255, 255, 0.35);
       border-radius: 12px;
@@ -34,15 +36,91 @@
       text-align: center;
       margin-top: 0;
     }
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin: 24px 0;
+    }
+    .control-label {
+      font-weight: bold;
+    }
+    input,
+    select,
+    button {
+      font: inherit;
+      color: #3b2f1e;
+      border: 1px solid #8a785b;
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.7);
+      box-sizing: border-box;
+    }
+    input:focus,
+    select:focus,
+    button:focus {
+      outline: 3px solid rgba(90, 74, 48, 0.35);
+      outline-offset: 1px;
+    }
+    .search-row {
+      display: flex;
+      gap: 8px;
+    }
+    .search-row input {
+      flex: 1;
+      min-width: 0;
+    }
+    button {
+      cursor: pointer;
+      background: #3b2f1e;
+      color: #f5ecd7;
+    }
+    button:hover,
+    a.back-link:hover {
+      background: #5a4a30;
+    }
+    .result-count {
+      margin: 0 0 14px;
+      font-weight: bold;
+    }
+    .faq-list {
+      display: grid;
+      gap: 8px;
+    }
     .faq-item {
-      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(59, 47, 30, 0.3);
     }
-    .faq-item h2 {
+    .faq-item summary {
+      cursor: pointer;
       font-size: 1.1em;
-      margin-bottom: 6px;
+      font-weight: bold;
+      padding: 10px 4px;
     }
-    .faq-item p {
-      margin: 0;
+    .faq-item summary::marker {
+      color: #5a4a30;
+    }
+    .faq-answer {
+      padding: 0 4px 12px;
+      line-height: 1.5;
+    }
+    .faq-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .faq-tag {
+      border-radius: 12px;
+      padding: 3px 9px;
+      background: rgba(59, 47, 30, 0.12);
+      font-size: 0.85em;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.45);
+    }
+    .back-wrapper {
+      text-align: center;
     }
     a.back-link {
       display: inline-block;
@@ -54,11 +132,16 @@
       border-radius: 6px;
       font-weight: bold;
     }
-    a.back-link:hover {
-      background: #5a4a30;
-    }
-    .back-wrapper {
-      text-align: center;
+    @media (max-width: 520px) {
+      body {
+        padding: 24px 12px;
+      }
+      main {
+        padding: 24px 18px;
+      }
+      .search-row {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -66,25 +149,137 @@
   <img class="title-image" src="EPIC_title.png" alt="EPIC board game title">
   <main>
     <h1>Časté otázky (FAQ)</h1>
-    <div class="faq-item">
-      <h2>Pro kolik hráčů je hra určena?</h2>
-      <p>Podrobné informace o počtu hráčů najdeš v pravidlech ke stažení na hlavní stránce.</p>
+    <div class="controls">
+      <label class="control-label" for="faq-search">Hledat v otázkách a odpovědích</label>
+      <div class="search-row">
+        <input id="faq-search" type="search" placeholder="Například: teleport, kouzla, vítězství" autocomplete="off">
+        <button id="clear-search" type="button">Vymazat</button>
+      </div>
+      <label class="control-label" for="faq-tag">Filtrovat podle tématu</label>
+      <select id="faq-tag">
+        <option value="">Všechna témata</option>
+      </select>
     </div>
-    <div class="faq-item">
-      <h2>Kde najdu pravidla hry?</h2>
-      <p>Kompletní pravidla ve formátu PDF si můžeš stáhnout přímo z <a href="index.html">hlavní stránky</a>.</p>
-    </div>
-    <div class="faq-item">
-      <h2>Kde koupím hru Jen buď EPIC?</h2>
-      <p>Informace o dostupnosti a nákupu budou brzy doplněny. Sleduj naše stránky pro aktuální novinky.</p>
-    </div>
-    <div class="faq-item">
-      <h2>Máš další dotaz?</h2>
-      <p>Napiš nám a rádi ti odpovíme.</p>
+    <p class="result-count" id="result-count" aria-live="polite">Načítám otázky…</p>
+    <div class="faq-list" id="faq-list">
+      <p class="message">Načítám FAQ…</p>
     </div>
     <div class="back-wrapper">
       <a class="back-link" href="index.html">Zpět na hlavní stránku</a>
     </div>
   </main>
+  <script>
+    const searchInput = document.querySelector("#faq-search");
+    const tagSelect = document.querySelector("#faq-tag");
+    const clearSearch = document.querySelector("#clear-search");
+    const resultCount = document.querySelector("#result-count");
+    const faqList = document.querySelector("#faq-list");
+    let questions = [];
+    let tags = new Map();
+
+    function normalize(value) {
+      return value.toLocaleLowerCase("cs").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function parsePipeFile(text) {
+      return text.trim().split(/\r?\n/).slice(1).map((line) => line.split("|"));
+    }
+
+    function render() {
+      const query = normalize(searchInput.value.trim());
+      const selectedTag = tagSelect.value;
+      const matchingQuestions = questions.filter((item) => {
+        const tagText = item.tagIds.map((tagId) => {
+          const tag = tags.get(tagId);
+          return `${tagId} ${tag?.name || ""} ${tag?.description || ""}`;
+        }).join(" ");
+        const searchableText = normalize(`${item.question} ${item.answer} ${tagText}`);
+        return (!query || searchableText.includes(query))
+          && (!selectedTag || item.tagIds.includes(selectedTag));
+      });
+
+      resultCount.textContent = matchingQuestions.length === 1
+        ? "Nalezena 1 otázka"
+        : `Nalezeno ${matchingQuestions.length} otázek`;
+      faqList.replaceChildren();
+
+      if (matchingQuestions.length === 0) {
+        const message = document.createElement("p");
+        message.className = "message";
+        message.textContent = "Tomuto hledání neodpovídá žádná otázka.";
+        faqList.append(message);
+        return;
+      }
+
+      matchingQuestions.forEach((item) => {
+        const detail = document.createElement("details");
+        detail.className = "faq-item";
+        const summary = document.createElement("summary");
+        summary.textContent = item.question;
+        const answer = document.createElement("div");
+        answer.className = "faq-answer";
+        answer.textContent = item.answer;
+        const tagList = document.createElement("div");
+        tagList.className = "faq-tags";
+        item.tagIds.forEach((tagId) => {
+          const tag = document.createElement("span");
+          tag.className = "faq-tag";
+          tag.textContent = tags.get(tagId)?.name || tagId;
+          tagList.append(tag);
+        });
+        answer.append(tagList);
+        detail.append(summary, answer);
+        faqList.append(detail);
+      });
+    }
+
+    async function loadFaq() {
+      const [faqResponse, tagsResponse] = await Promise.all([
+        fetch("faq_cz.csv"),
+        fetch("faq_tags_cz.csv")
+      ]);
+      if (!faqResponse.ok || !tagsResponse.ok) {
+        throw new Error("FAQ data se nepodařilo načíst.");
+      }
+
+      tags = new Map(parsePipeFile(await tagsResponse.text()).map(([id, name, description]) => [
+        id,
+        { name, description }
+      ]));
+      questions = parsePipeFile(await faqResponse.text()).map(([id, tagIds, question, answer]) => ({
+        id,
+        tagIds: tagIds.split(","),
+        question,
+        answer
+      }));
+
+      [...tags.entries()]
+        .sort(([, first], [, second]) => first.name.localeCompare(second.name, "cs"))
+        .forEach(([id, tag]) => {
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = tag.name;
+          tagSelect.append(option);
+        });
+      render();
+    }
+
+    searchInput.addEventListener("input", render);
+    tagSelect.addEventListener("change", render);
+    clearSearch.addEventListener("click", () => {
+      searchInput.value = "";
+      tagSelect.value = "";
+      render();
+      searchInput.focus();
+    });
+    loadFaq().catch((error) => {
+      resultCount.textContent = "FAQ se nepodařilo načíst";
+      faqList.replaceChildren();
+      const message = document.createElement("p");
+      message.className = "message";
+      message.textContent = `${error.message} Zkontrolujte, že je stránka spuštěná přes webový server.`;
+      faqList.append(message);
+    });
+  </script>
 </body>
 </html>
