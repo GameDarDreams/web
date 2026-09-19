@@ -45,7 +45,7 @@
     .form-wrapper iframe {
       display: block;
       width: 100%;
-      min-height: 800px;
+      height: 800px;
       border: 0;
     }
     .back-link {
@@ -77,12 +77,18 @@
     <h1>Kontakt</h1>
     <div class="form-wrapper">
       <iframe
-        src="https://tally.so/r/q4rZQ5"
+        data-tally-src="https://tally.so/r/q4rZQ5?dynamicHeight=1"
         title="Kontaktní formulář"
         loading="lazy">
       </iframe>
     </div>
     <a class="back-link" href="index.html">Zpět na hlavní stránku</a>
   </main>
+  <script>
+    const tallyEmbedScript = document.createElement("script");
+    tallyEmbedScript.src = "https://tally.so/widgets/embed.js";
+    tallyEmbedScript.onload = () => window.Tally?.loadEmbeds();
+    document.body.append(tallyEmbedScript);
+  </script>
 </body>
 </html>
