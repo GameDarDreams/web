@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FAQ - Jen buď EPIC - Deskovka</title>
+  <link rel="stylesheet" href="menu.css">
   <style>
     body {
       margin: 0;
@@ -21,25 +22,6 @@
       max-width: 600px;
       width: 100%;
       height: auto;
-    }
-    .site-nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-    }
-    .site-nav a {
-      padding: 10px 16px;
-      background: #3b2f1e;
-      color: #f5ecd7;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-    .site-nav a:hover,
-    .site-nav a[aria-current="page"] {
-      background: #5a4a30;
     }
     main {
       max-width: 700px;
@@ -164,12 +146,6 @@
 </head>
 <body>
   <img class="title-image" src="EPIC_title.png" alt="EPIC board game title">
-  <nav class="site-nav" aria-label="Hlavní navigace">
-    <a href="index.html">Domů</a>
-    <a href="EPIC_rules_CZ.pdf" target="_blank" rel="noopener">Pravidla (PDF)</a>
-    <a href="faq.html" aria-current="page">FAQ</a>
-    <a href="contact_form.html">Kontakt</a>
-  </nav>
   <main>
     <h1>Časté otázky (FAQ)</h1>
     <div class="controls">
@@ -191,6 +167,7 @@
       <p class="message">Načítám FAQ…</p>
     </div>
   </main>
+  <script src="menu.js"></script>
   <script>
     const searchInput = document.querySelector("#faq-search");
     const tagSelect = document.querySelector("#faq-tag");

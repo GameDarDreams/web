@@ -1,0 +1,21 @@
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.site-nav a {
+  padding: 10px 16px;
+  background: #3b2f1e;
+  color: #f5ecd7;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
+  background: #5a4a30;
+}
