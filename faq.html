@@ -22,6 +22,25 @@
       width: 100%;
       height: auto;
     }
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .site-nav a {
+      padding: 10px 16px;
+      background: #3b2f1e;
+      color: #f5ecd7;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .site-nav a:hover,
+    .site-nav a[aria-current="page"] {
+      background: #5a4a30;
+    }
     main {
       max-width: 700px;
       width: 100%;
@@ -130,19 +149,6 @@
       border-radius: 6px;
       background: rgba(255, 255, 255, 0.45);
     }
-    .back-wrapper {
-      text-align: center;
-    }
-    a.back-link {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 24px;
-      background: #3b2f1e;
-      color: #f5ecd7;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
     @media (max-width: 520px) {
       body {
         padding: 24px 12px;
@@ -158,6 +164,12 @@
 </head>
 <body>
   <img class="title-image" src="EPIC_title.png" alt="EPIC board game title">
+  <nav class="site-nav" aria-label="Hlavní navigace">
+    <a href="index.html">Domů</a>
+    <a href="EPIC_rules_CZ.pdf" target="_blank" rel="noopener">Pravidla (PDF)</a>
+    <a href="faq.html" aria-current="page">FAQ</a>
+    <a href="contact_form.html">Kontakt</a>
+  </nav>
   <main>
     <h1>Časté otázky (FAQ)</h1>
     <div class="controls">
@@ -177,9 +189,6 @@
     <p class="result-count" id="result-count" aria-live="polite">Načítám otázky…</p>
     <div class="faq-list" id="faq-list">
       <p class="message">Načítám FAQ…</p>
-    </div>
-    <div class="back-wrapper">
-      <a class="back-link" href="index.html">Zpět na hlavní stránku</a>
     </div>
   </main>
   <script>
