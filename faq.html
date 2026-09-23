@@ -80,8 +80,14 @@
       background: #5a4a30;
     }
     .result-count {
-      margin: 0 0 14px;
+      margin: 0;
       font-weight: bold;
+    }
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 0 14px;
     }
     .faq-list {
       display: grid;
@@ -162,7 +168,10 @@
         <button id="clear-tag" type="button" hidden>Vymazat téma</button>
       </div>
     </div>
-    <p class="result-count" id="result-count" aria-live="polite">Načítám otázky…</p>
+    <div class="result-row">
+      <button id="collapse-all" type="button" hidden>Skryj vše</button>
+      <p class="result-count" id="result-count" aria-live="polite">Načítám otázky…</p>
+    </div>
     <div class="faq-list" id="faq-list">
       <p class="message">Načítám FAQ…</p>
     </div>
@@ -174,6 +183,7 @@
     const clearSearch = document.querySelector("#clear-search");
     const clearTag = document.querySelector("#clear-tag");
     const resultCount = document.querySelector("#result-count");
+    const collapseAll = document.querySelector("#collapse-all");
     const faqList = document.querySelector("#faq-list");
     let questions = [];
     let tags = new Map();
@@ -203,6 +213,7 @@
       resultCount.textContent = matchingQuestions.length === 1
         ? "Nalezena 1 otázka"
         : `Nalezeno ${matchingQuestions.length} otázek`;
+      collapseAll.hidden = matchingQuestions.length === 0;
       faqList.replaceChildren();
 
       if (matchingQuestions.length === 0) {
@@ -216,6 +227,7 @@
       matchingQuestions.forEach((item) => {
         const detail = document.createElement("details");
         detail.className = "faq-item";
+        detail.open = true;
         const summary = document.createElement("summary");
         summary.textContent = item.question;
         const answer = document.createElement("div");
@@ -283,6 +295,11 @@
       tagSelect.value = "";
       render();
       tagSelect.focus();
+    });
+    collapseAll.addEventListener("click", () => {
+      faqList.querySelectorAll("details.faq-item").forEach((detail) => {
+        detail.open = false;
+      });
     });
     loadFaq().catch((error) => {
       resultCount.textContent = "FAQ se nepodařilo načíst";
